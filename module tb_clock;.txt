@@ -1,0 +1,56 @@
+module tb_clock;
+
+    // Inputs
+    reg Clk_1sec;
+    reg reset;
+  reg [5:0] alarm_hour;
+  reg [7:0] alarm_minute;
+  reg [7:0] alarm_second;
+
+    // Outputs
+    wire [5:0] seconds;
+    wire [5:0] minutes;
+    wire [4:0] hours;
+    wire alarm;
+
+    // Instantiate the Unit Under Test (UUT)
+    Digital_Clock uut (
+        .Clk_1sec(Clk_1sec), 
+        .reset(reset), 
+        .seconds(seconds), 
+        .minutes(minutes), 
+      .hours(hours),
+        .alarm(alarm),
+      .alarm_hour(alarm_hour),
+      .alarm_minute(alarm_minute),
+      .alarm_second(alarm_second)
+    );
+    
+    //Generating the Clock with `1 Hz frequency
+    initial Clk_1sec = 0;
+    always #50000000 Clk_1sec = ~Clk_1sec;  //Every 0.5 sec toggle the clock.
+
+    initial begin
+        reset = 1;
+        // Wait 100 ns for global reset to finish
+        #100;
+        reset = 0; 
+        repeat (100) begin
+      #5; 
+          if (hours == 3 && minutes == 30 && seconds == 0)
+        begin
+          alarm_hour = 3;
+          alarm_minute = 30;
+          alarm_second = 0;
+        end
+      end
+    end
+     
+ initial  begin
+    $dumpfile(" tb_clock.vcd");
+
+  $dumpvars();
+
+  #900000000000 $finish;   
+  end 
+endmodule

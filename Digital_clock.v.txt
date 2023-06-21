@@ -1,0 +1,63 @@
+// Code your design here
+module Digital_Clock(
+    Clk_1sec,  //Clock with 1 Hz frequency
+    reset,     //active high reset
+    seconds,
+    minutes,
+    hours,
+    alarm_hour,
+    alarm_minute, 
+    alarm_second,
+    alarm );
+
+
+    input Clk_1sec;  
+    input reset;
+  input  [5:0] alarm_hour;
+  input   [7:0] alarm_minute;
+  input   [7:0] alarm_second;
+
+    output [5:0] seconds;
+    output [5:0] minutes;
+    output [4:0] hours;
+    output alarm;
+  
+//Internal variables.
+    reg [5:0] seconds;
+    reg [5:0] minutes;
+    reg [4:0] hours; 
+  reg [5:0] alarm_hour;
+  reg [7:0] alarm_minute;
+  reg [7:0] alarm_second;
+  reg alarm;
+    always @(posedge(Clk_1sec) or posedge(reset))
+    begin
+        if(reset == 1'b1) begin  
+            //reset the time.
+            seconds = 0;
+            minutes = 0;
+            hours = 0;  end
+        else if(Clk_1sec == 1'b1) begin 
+            seconds = seconds + 1; 
+            if(seconds == 60) begin 
+                seconds = 0;  
+                minutes = minutes + 1; 
+                if(minutes == 60) begin 
+                    minutes = 0;  
+                    hours = hours + 1; 
+                   if(hours ==  24) begin  
+                        hours = 0; 
+                    end 
+                end
+            end     
+        end
+    end     
+  always @(posedge Clk_1sec) begin
+    if (alarm_hour == hours && alarm_minute == minutes && alarm_second == seconds)
+      alarm <= 1'b1;
+    else
+      alarm <= 1'b0;
+  end
+
+  
+endmodule
